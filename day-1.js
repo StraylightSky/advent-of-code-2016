@@ -11,6 +11,10 @@ const startingState = {
   facing: 0
 };
 
+let block;
+let first = false;
+let visited = new Set();
+
 const moves = input.split(', ').map((move) => {
   return {
     turn: move[0],
@@ -23,7 +27,15 @@ function calc(currentState, move) {
   let dir = currentState.facing % 4;
   let axis = dir % 2 === 0 ? 'y' : 'x';
 
-  currentState[axis] += move.distance * (dir > 1 ? -1 : 1);
+  for (let i = 0; i < move.distance; i++) {
+    currentState[axis] += (dir > 1 ? -1 : 1);
+    
+    if (visited.has(`${currentState.x}_${currentState.y}`) && !first) {
+      block = Math.abs(currentState.x) + Math.abs(currentState.y);
+      first = true;
+    }
+    visited.add(`${currentState.x}_${currentState.y}`);
+  }
 
   return currentState;
 }
@@ -31,3 +43,4 @@ function calc(currentState, move) {
 const endingState = moves.reduce(calc, startingState);
 
 console.log(Math.abs(endingState.x) + Math.abs(endingState.y));
+console.log(block);
